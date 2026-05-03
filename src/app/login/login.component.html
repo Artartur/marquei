@@ -1,0 +1,255 @@
+<div class="min-h-screen flex bg-[#042C53]">
+  <div class="hidden lg:flex lg:w-1/2 flex-col p-14 relative overflow-hidden">
+    <div
+      class="absolute -top-20 -left-20 w-85 h-85 rounded-full bg-[#185FA5]/30 border border-[#378ADD]/10"
+    ></div>
+    <div
+      class="absolute bottom-15 -right-15 w-65 h-65 rounded-full bg-[#0C447C]/40 border border-[#378ADD]/10"
+    ></div>
+    <div
+      class="absolute bottom-50 left-10 w-30 h-30 rounded-full bg-[#378ADD]/10 border border-[#85B7EB]/10"
+    ></div>
+
+    <div class="relative z-10">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#378ADD] flex items-center justify-center shadow-lg">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8 2v3M16 2v3M3 8h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <circle cx="9" cy="13" r="1.5" fill="white" />
+            <circle cx="15" cy="13" r="1.5" fill="white" />
+          </svg>
+        </div>
+        <span
+          class="text-white text-2xl font-semibold tracking-tight"
+          style="font-family: 'DM Sans', sans-serif"
+          >Marquei</span
+        >
+      </div>
+    </div>
+
+    <div class="relative z-10 flex-1 flex flex-col justify-center space-y-8">
+      <div>
+        <p class="text-[#85B7EB] text-sm uppercase tracking-[0.18em] font-medium mb-4">
+          Beleza sem fila de espera
+        </p>
+        <h1
+          class="text-white text-[2.6rem] leading-[1.15] font-semibold"
+          style="font-family: 'DM Sans', sans-serif"
+        >
+          Seu próximo look começa <br />
+          <span class="text-[#378ADD]">com um clique.</span>
+        </h1>
+      </div>
+
+      <p class="text-[#B5D4F4] text-base leading-relaxed max-w-md">
+        Escolha o serviço, o profissional e o horário que cabem na sua rotina. Rápido, fácil e
+        confirmado na hora.
+      </p>
+
+      <div class="flex flex-wrap gap-2 pt-2">
+        <span
+          class="inline-flex items-center gap-2 bg-[#0C447C]/60 text-[#B5D4F4] text-sm px-4 py-2 rounded-full border border-[#185FA5]/50"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-[#378ADD]"></span>
+          Agende em segundos
+        </span>
+        <span
+          class="inline-flex items-center gap-2 bg-[#0C447C]/60 text-[#B5D4F4] text-sm px-4 py-2 rounded-full border border-[#185FA5]/50"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-[#378ADD]"></span>
+          Escolha seu profissional
+        </span>
+        <span
+          class="inline-flex items-center gap-2 bg-[#0C447C]/60 text-[#B5D4F4] text-sm px-4 py-2 rounded-full border border-[#185FA5]/50"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-[#378ADD]"></span>
+          Confirmação instantânea
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-14 bg-white">
+    <div class="w-full max-w-md">
+      <div class="flex lg:hidden items-center gap-3 mb-10">
+        <div class="w-9 h-9 rounded-xl bg-[#042C53] flex items-center justify-center">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8 2v3M16 2v3M3 8h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <circle cx="9" cy="13" r="1.5" fill="white" />
+            <circle cx="15" cy="13" r="1.5" fill="white" />
+          </svg>
+        </div>
+        <span
+          class="text-[#042C53] text-xl font-semibold tracking-tight"
+          style="font-family: 'DM Sans', sans-serif"
+          >Marquei</span
+        >
+      </div>
+
+      <div class="flex bg-[#F1EFE8] rounded-xl p-1 mb-8">
+        <button
+          (click)="showLogin()"
+          [ngClass]="
+            activeTab() === 'login'
+              ? 'flex-1 py-2.5 text-sm font-semibold rounded-lg bg-white text-[#042C53] shadow-sm transition-all duration-200'
+              : 'flex-1 py-2.5 text-sm font-medium rounded-lg text-[#888780] hover:text-[#5F5E5A] transition-all duration-200'
+          "
+        >
+          Entrar
+        </button>
+        <button
+          (click)="showRegister()"
+          [ngClass]="
+            activeTab() === 'register'
+              ? 'flex-1 py-2.5 text-sm font-semibold rounded-lg bg-white text-[#042C53] shadow-sm transition-all duration-200'
+              : 'flex-1 py-2.5 text-sm font-medium rounded-lg text-[#888780] hover:text-[#5F5E5A] transition-all duration-200'
+          "
+        >
+          Criar conta
+        </button>
+      </div>
+      <div *ngIf="activeTab() === 'login'">
+        <div class="mb-8">
+          <h2
+            class="text-[#042C53] text-3xl font-semibold mb-2"
+            style="font-family: 'DM Sans', sans-serif"
+          >
+            Bem-vindo de volta
+          </h2>
+          <p class="text-[#5F5E5A] text-sm">Acesse sua conta e agende seu próximo horário.</p>
+        </div>
+
+        <form class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-[#2C2C2A] mb-1.5">E-mail</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <rect
+                    x="2"
+                    y="4"
+                    width="20"
+                    height="16"
+                    rx="2"
+                    stroke="#888780"
+                    stroke-width="1.5"
+                  />
+                  <path
+                    d="M2 7l10 7 10-7"
+                    stroke="#888780"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <input
+                type="email"
+                placeholder="seuemail@exemplo.com"
+                class="w-full pl-10 pr-4 py-3 bg-[#F1EFE8] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-sm font-medium text-[#2C2C2A]">Senha</label>
+            </div>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <rect
+                    x="3"
+                    y="11"
+                    width="18"
+                    height="11"
+                    rx="2"
+                    stroke="#888780"
+                    stroke-width="1.5"
+                  />
+                  <path
+                    d="M7 11V7a5 5 0 0 1 10 0v4"
+                    stroke="#888780"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
+                  <circle cx="12" cy="16" r="1.5" fill="#888780" />
+                </svg>
+              </div>
+              <input
+                type="password"
+                placeholder="••••••••"
+                class="w-full pl-10 pr-12 py-3 bg-[#F1EFE8] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
+              />
+              <button
+                type="button"
+                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#888780] hover:text-[#5F5E5A] transition-colors"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-[#185FA5] hover:bg-[#0C447C] active:bg-[#042C53] text-white font-semibold py-3.5 rounded-xl text-sm transition-all duration-200 shadow-md shadow-[#185FA5]/30 hover:shadow-lg hover:shadow-[#185FA5]/25 flex items-center justify-center gap-2 mt-2"
+          >
+            Entrar
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M5 12h14M13 6l6 6-6 6"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </form>
+
+        <p class="text-xs text-center text-[#888780] mt-8 leading-relaxed">
+          Ainda não tem conta?
+          <button
+            (click)="showRegister()"
+            class="text-[#185FA5] font-medium hover:text-[#378ADD] transition-colors bg-transparent border-none cursor-pointer p-0"
+          >
+            Crie a sua agora
+          </button>
+          e agende em segundos.
+        </p>
+      </div>
+
+      <app-register *ngIf="activeTab() === 'register'"></app-register>
+    </div>
+  </div>
+</div>

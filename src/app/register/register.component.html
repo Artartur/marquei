@@ -5,7 +5,7 @@
   <p class="text-[#5F5E5A] text-sm">Rápido e gratuito. Seu primeiro agendamento a um clique.</p>
 </div>
 
-<form class="space-y-4">
+<form class="space-y-4" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
   <div>
     <label class="block text-sm font-medium text-[#2C2C2A] mb-1.5">Nome completo</label>
     <div class="relative">
@@ -21,6 +21,7 @@
       </div>
       <input
         type="text"
+        formControlName="name"
         placeholder="Seu nome completo"
         class="w-full pl-10 pr-4 py-3 bg-[#F1EFE8] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
       />
@@ -38,6 +39,7 @@
       </div>
       <input
         type="email"
+        formControlName="email"
         placeholder="seuemail@exemplo.com"
         class="w-full pl-10 pr-4 py-3 bg-[#F1EFE8] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
       />
@@ -60,6 +62,7 @@
         </div>
         <input
           type="tel"
+          formControlName="phone"
           placeholder="(00) 00000-0000"
           class="w-full pl-10 pr-4 py-3 bg-[#F1EFE8] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
         />
@@ -81,6 +84,7 @@
         </div>
         <input
           type="text"
+          formControlName="cpf"
           placeholder="000.000.000-00"
           class="w-full pl-10 pr-4 py-3 bg-[#F1EFE8] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
         />
@@ -105,6 +109,7 @@
       </div>
       <input
         type="password"
+        formControlName="password"
         placeholder="Mínimo 8 caracteres"
         class="w-full pl-10 pr-12 py-3 bg-[#F1EFE8] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
       />
@@ -127,8 +132,9 @@
   <button
     type="submit"
     class="w-full bg-[#185FA5] hover:bg-[#0C447C] active:bg-[#042C53] text-white font-semibold py-3.5 rounded-xl text-sm transition-all duration-200 shadow-md shadow-[#185FA5]/30 hover:shadow-lg hover:shadow-[#185FA5]/25 flex items-center justify-center gap-2 mt-1"
+    [disabled]="isLoading"
   >
-    Criar minha conta
+    {{ isLoading ? 'Criando conta...' : 'Criar minha conta' }}
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
       <path
         d="M5 12h14M13 6l6 6-6 6"

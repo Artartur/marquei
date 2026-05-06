@@ -143,7 +143,7 @@
           <p class="text-[#5F5E5A] text-sm">Acesse sua conta e agende seu próximo horário.</p>
         </div>
 
-        <form class="space-y-5">
+        <form class="space-y-5" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <div>
             <label class="block text-sm font-medium text-[#2C2C2A] mb-1.5">E-mail</label>
             <div class="relative">
@@ -169,6 +169,7 @@
               <input
                 type="email"
                 placeholder="seuemail@exemplo.com"
+                formControlName="email"
                 class="w-full pl-10 pr-4 py-3 bg-[#F1EFE8] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
               />
             </div>
@@ -202,6 +203,7 @@
               <input
                 type="password"
                 placeholder="••••••••"
+                formControlName="password"
                 class="w-full pl-10 pr-12 py-3 bg-[#F1EFE8] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
               />
               <button
@@ -223,8 +225,9 @@
           <button
             type="submit"
             class="w-full bg-[#185FA5] hover:bg-[#0C447C] active:bg-[#042C53] text-white font-semibold py-3.5 rounded-xl text-sm transition-all duration-200 shadow-md shadow-[#185FA5]/30 hover:shadow-lg hover:shadow-[#185FA5]/25 flex items-center justify-center gap-2 mt-2"
+            [disabled]="isLoading"
           >
-            Entrar
+            {{ isLoading ? 'Entrando...' : 'Entrar' }}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path
                 d="M5 12h14M13 6l6 6-6 6"

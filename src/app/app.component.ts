@@ -4,6 +4,5 @@ import { Component, signal } from '@angular/core';
   selector: 'app-root',
   templateUrl: './app.component.html',
   standalone: false,
-  styleUrl: './app.component.css',
 })
 export class AppComponent {}

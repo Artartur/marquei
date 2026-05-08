@@ -7,6 +7,7 @@ import { StoreService } from './store.service';
 import { User } from '../interfaces/user.interface';
 import { catchError, of, switchMap, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { UserRole } from '../utils/enums/UserRole';
 
 @Injectable({
   providedIn: 'root',
@@ -58,6 +59,10 @@ export class AuthService {
         tap((res) => {
           this.storeService.updateAcessToken(res.accessToken);
           this.storeService.updateCurrentUser(res.user);
+
+          if (res.user.role === UserRole.CLIENT) this.router.navigate(['/appointment']);
+          else if (res.user.role === UserRole.MANAGER) this.router.navigate(['/dashboard']);
+          else if (res.user.role === UserRole.PROFESSIONAL) this.router.navigate(['/agenda']);
         }),
       );
   }
@@ -66,6 +71,7 @@ export class AuthService {
     return this.httpClient.post(`${apiUrl}/auth/logout`, {}, { withCredentials: true }).pipe(
       tap(() => {
         this.logoutClear();
+        this.router.navigate(['/']);
       }),
       catchError(() => {
         this.logoutClear();

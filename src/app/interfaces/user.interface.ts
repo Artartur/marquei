@@ -7,6 +7,7 @@ export interface User {
   name: string;
   password?: string;
   phone: string;
+  professionalId?: string;
   role?: UserRole;
   createdAt?: string;
   updatedAt?: string;

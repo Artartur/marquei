@@ -1,0 +1,51 @@
+<div class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2 w-80 pointer-events-none">
+  <div
+    *ngFor="let toast of items$ | async; trackBy: trackById"
+    class="toast-enter pointer-events-auto flex items-start gap-3 bg-white rounded-xl shadow-lg border-l-4 px-4 py-3.5"
+    [ngClass]="{
+      'border-l-green-500': toast.type === 'success',
+      'border-l-red-500': toast.type === 'error',
+      'border-l-amber-500': toast.type === 'warning',
+    }"
+  >
+    <div class="flex-shrink-0 mt-0.5">
+      <svg *ngIf="toast.type === 'success'" width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" fill="#22c55e" />
+        <path
+          d="M8 12l3 3 5-5"
+          stroke="white"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <svg *ngIf="toast.type === 'error'" width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" fill="#ef4444" />
+        <path d="M15 9l-6 6M9 9l6 6" stroke="white" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+      <svg *ngIf="toast.type === 'warning'" width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+          fill="#f59e0b"
+        />
+        <path d="M12 9v4M12 17h.01" stroke="white" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+    </div>
+
+    <p class="flex-1 text-sm text-[#2C2C2A] leading-snug">{{ toast.message }}</p>
+
+    <button
+      (click)="dismiss(toast.id)"
+      class="shrink-0 text-[#888780] hover:text-[#2C2C2A] transition-colors mt-0.5"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M18 6 6 18M6 6l12 12"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
+  </div>
+</div>

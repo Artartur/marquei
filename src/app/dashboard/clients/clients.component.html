@@ -1,0 +1,160 @@
+<div class="min-h-screen bg-[#F7F5EF] flex" style="font-family: 'DM Sans', sans-serif">
+  <app-dashboard-sidebar></app-dashboard-sidebar>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <ng-container *ngIf="filteredClients$ | async as clients">
+      <header class="bg-white border-b border-[#E8E6DF] px-6 py-4 flex items-center justify-between">
+        <div>
+          <p class="text-[#85B7EB] text-xs uppercase tracking-[0.18em] font-medium">Gerência</p>
+          <h1 class="text-[#042C53] text-xl font-semibold">Clientes</h1>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <svg
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-[#888780]"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5" />
+              <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Buscar por nome, e-mail ou telefone"
+              (input)="onSearch($event)"
+              class="pl-9 pr-4 py-2 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200 w-72"
+            />
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-1 p-6 overflow-auto">
+        <div class="bg-white rounded-2xl border border-[#E8E6DF] overflow-hidden">
+          <div class="grid grid-cols-12 gap-4 px-6 py-3 border-b border-[#E8E6DF] bg-[#F7F5EF]">
+            <div class="col-span-4">
+              <p class="text-[#888780] text-xs font-medium uppercase tracking-wide">Cliente</p>
+            </div>
+            <div class="col-span-3">
+              <p class="text-[#888780] text-xs font-medium uppercase tracking-wide">Contato</p>
+            </div>
+            <div class="col-span-2">
+              <p class="text-[#888780] text-xs font-medium uppercase tracking-wide">CPF</p>
+            </div>
+            <div class="col-span-3"></div>
+          </div>
+
+          <div class="divide-y divide-[#E8E6DF]">
+            <div
+              *ngFor="let client of clients"
+              class="grid grid-cols-12 gap-4 items-center px-6 py-3.5"
+            >
+              <div class="col-span-4 flex items-center gap-3 min-w-0">
+                <div
+                  class="w-8 h-8 rounded-full bg-[#EBF4FD] flex items-center justify-center text-[#185FA5] text-xs font-semibold flex-shrink-0"
+                >
+                  {{ client.name | slice: 0 : 2 | uppercase }}
+                </div>
+                <p class="text-[#2C2C2A] text-sm font-medium truncate">{{ client.name }}</p>
+              </div>
+              <div class="col-span-3 min-w-0">
+                <p class="text-[#2C2C2A] text-xs truncate">{{ client.email }}</p>
+                <p class="text-[#888780] text-xs mt-0.5">{{ client.phone }}</p>
+              </div>
+              <div class="col-span-2">
+                <p class="text-[#888780] text-xs font-mono">{{ client.cpf }}</p>
+              </div>
+              <div class="col-span-3 flex justify-end">
+                <button
+                  (click)="openClient(client)"
+                  class="text-xs text-[#185FA5] font-medium border border-[#C3DEFF] bg-[#EBF4FD] rounded-lg px-3 py-1 hover:bg-[#D6EAFA] transition-colors"
+                >
+                  Gerenciar
+                </button>
+              </div>
+            </div>
+
+            <div
+              *ngIf="clients.length === 0"
+              class="flex flex-col items-center justify-center py-16"
+            >
+              <div class="w-12 h-12 rounded-2xl bg-[#EBF4FD] flex items-center justify-center mb-4">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
+                    stroke="#185FA5"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <p class="text-[#2C2C2A] text-sm font-medium">Nenhum cliente encontrado</p>
+              <p class="text-[#888780] text-xs mt-1">Tente buscar por outro nome ou e-mail.</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </ng-container>
+  </div>
+</div>
+
+<div
+  *ngIf="selectedClient"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+  (click)="closeClient()"
+>
+  <div
+    class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="flex items-start justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-full bg-[#EBF4FD] flex items-center justify-center text-[#185FA5] text-sm font-semibold flex-shrink-0"
+        >
+          {{ selectedClient.name | slice: 0 : 2 | uppercase }}
+        </div>
+        <div>
+          <p class="text-[#2C2C2A] text-sm font-semibold">{{ selectedClient.name }}</p>
+          <p class="text-[#888780] text-xs">{{ selectedClient.email }}</p>
+        </div>
+      </div>
+      <button
+        (click)="closeClient()"
+        class="text-[#888780] hover:text-[#042C53] transition-colors mt-1"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+
+    <p class="text-[#888780] text-xs uppercase tracking-widest font-medium mb-3">Alterar cargo</p>
+
+    <div class="space-y-2">
+      <button
+        *ngFor="let opt of roleOptions"
+        (click)="updateRole(opt.value)"
+        [disabled]="updatingRole || selectedClient.role === opt.value"
+        [ngClass]="
+          selectedClient.role === opt.value
+            ? 'bg-[#EBF4FD] border-[#185FA5] text-[#185FA5] cursor-default'
+            : 'bg-white border-[#E8E6DF] text-[#2C2C2A] hover:border-[#185FA5] hover:bg-[#F0F7FF]'
+        "
+        class="w-full flex items-center justify-between px-4 py-3 rounded-xl border text-sm font-medium transition-colors disabled:opacity-60"
+      >
+        <span>{{ opt.label }}</span>
+        <svg
+          *ngIf="selectedClient.role === opt.value"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

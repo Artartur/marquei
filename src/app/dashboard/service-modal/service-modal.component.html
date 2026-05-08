@@ -1,0 +1,150 @@
+<div
+  *ngIf="isOpen"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4"
+  style="font-family: 'DM Sans', sans-serif"
+>
+  <div
+    class="absolute inset-0 bg-[#042C53]/40 backdrop-blur-sm"
+    (click)="close()"
+  ></div>
+
+  <div class="relative bg-white rounded-2xl border border-[#E8E6DF] shadow-xl w-full max-w-md">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-[#E8E6DF]">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-[#EBF4FD] flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              *ngIf="!isEditMode"
+              d="M12 5v14M5 12h14"
+              stroke="#185FA5"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+            <path
+              *ngIf="isEditMode"
+              d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"
+              stroke="#185FA5"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+        <div>
+          <p class="text-[#85B7EB] text-xs uppercase tracking-[0.15em] font-medium">Serviços</p>
+          <h2 class="text-[#042C53] text-base font-semibold leading-tight">
+            {{ isEditMode ? 'Editar serviço' : 'Novo serviço' }}
+          </h2>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="close()"
+        class="w-8 h-8 rounded-xl flex items-center justify-center text-[#888780] hover:bg-[#F7F5EF] hover:text-[#2C2C2A] transition-all duration-150"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="p-6 space-y-4">
+      <div>
+        <label class="block text-xs font-medium text-[#2C2C2A] mb-1.5">Nome do serviço</label>
+        <input
+          type="text"
+          formControlName="name"
+          placeholder="Ex: Corte feminino"
+          class="w-full px-3.5 py-2.5 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
+          [class.border-red-400]="form.get('name')?.invalid && form.get('name')?.touched"
+        />
+        <p
+          *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
+          class="text-red-500 text-xs mt-1"
+        >
+          Nome é obrigatório.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-[#2C2C2A] mb-1.5">Preço (R$)</label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            formControlName="price"
+            placeholder="0,00"
+            class="w-full px-3.5 py-2.5 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
+            [class.border-red-400]="form.get('price')?.invalid && form.get('price')?.touched"
+          />
+          <p
+            *ngIf="form.get('price')?.invalid && form.get('price')?.touched"
+            class="text-red-500 text-xs mt-1"
+          >
+            Preço inválido.
+          </p>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-[#2C2C2A] mb-1.5">Duração (min)</label>
+          <input
+            type="number"
+            min="1"
+            formControlName="durationMinutes"
+            placeholder="30"
+            class="w-full px-3.5 py-2.5 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
+            [class.border-red-400]="form.get('durationMinutes')?.invalid && form.get('durationMinutes')?.touched"
+          />
+          <p
+            *ngIf="form.get('durationMinutes')?.invalid && form.get('durationMinutes')?.touched"
+            class="text-red-500 text-xs mt-1"
+          >
+            Duração inválida.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between py-3 px-4 bg-[#F7F5EF] rounded-xl border border-[#E8E6DF]">
+        <div>
+          <p class="text-[#2C2C2A] text-sm font-medium">Serviço ativo</p>
+          <p class="text-[#888780] text-xs">Disponível para agendamentos</p>
+        </div>
+        <button
+          type="button"
+          (click)="form.get('active')?.setValue(!form.get('active')?.value)"
+          [class]="form.get('active')?.value
+            ? 'relative w-10 h-6 rounded-full bg-[#185FA5] transition-all duration-200 flex-shrink-0'
+            : 'relative w-10 h-6 rounded-full bg-[#D3D1C7] transition-all duration-200 flex-shrink-0'"
+        >
+          <span
+            [class]="form.get('active')?.value
+              ? 'absolute top-1 left-5 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-200'
+              : 'absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-200'"
+          ></span>
+        </button>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button
+          type="button"
+          (click)="close()"
+          class="flex-1 px-4 py-2.5 rounded-xl border border-[#D3D1C7] text-[#2C2C2A] text-sm font-medium hover:bg-[#F7F5EF] transition-all duration-200"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          [disabled]="loading"
+          class="flex-1 px-4 py-2.5 rounded-xl bg-[#185FA5] hover:bg-[#0C447C] disabled:opacity-60 text-white text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+        >
+          <svg *ngIf="!loading" width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M20 6 9 17l-5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <svg *ngIf="loading" class="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" stroke-dasharray="31.4" stroke-dashoffset="10" />
+          </svg>
+          {{ isEditMode ? 'Salvar alterações' : 'Criar serviço' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

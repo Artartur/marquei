@@ -1,0 +1,260 @@
+<div
+  *ngIf="vm$ | async as vm"
+  class="min-h-screen bg-[#F7F5EF] flex"
+  style="font-family: 'DM Sans', sans-serif"
+>
+  <app-agenda-sidebar></app-agenda-sidebar>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="bg-white border-b border-[#E8E6DF] px-6 py-4 flex items-center justify-between">
+      <div>
+        <p class="text-[#85B7EB] text-xs uppercase tracking-[0.18em] font-medium">Profissional</p>
+        <h1 class="text-[#042C53] text-xl font-semibold">Minha agenda</h1>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 bg-[#F7F5EF] rounded-xl px-3 py-2">
+          <button
+            (click)="previousWeek()"
+            class="text-[#5F5E5A] hover:text-[#042C53] transition-colors"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M15 18l-6-6 6-6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+          <span class="text-sm font-medium text-[#2C2C2A] px-1">{{ vm.weekRange }}</span>
+          <button
+            (click)="nextWeek()"
+            class="text-[#5F5E5A] hover:text-[#042C53] transition-colors"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M9 18l6-6-6-6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+        <button
+          class="bg-[#185FA5] hover:bg-[#0C447C] text-white text-sm font-medium px-4 py-2 rounded-xl transition-all duration-200 flex items-center gap-2"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          Bloquear horário
+        </button>
+      </div>
+    </header>
+
+    <main class="flex-1 p-6 overflow-auto">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-2xl border border-[#E8E6DF] p-4">
+          <p class="text-[#888780] text-xs mb-1">Hoje</p>
+          <p class="text-[#042C53] text-2xl font-bold">{{ vm.todayCount }}</p>
+          <p class="text-[#5F5E5A] text-xs mt-0.5">atendimentos</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-[#E8E6DF] p-4">
+          <p class="text-[#888780] text-xs mb-1">Esta semana</p>
+          <p class="text-[#042C53] text-2xl font-bold">{{ vm.weekCount }}</p>
+          <p class="text-[#5F5E5A] text-xs mt-0.5">atendimentos</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-[#E8E6DF] p-4">
+          <p class="text-[#888780] text-xs mb-1">Faturamento</p>
+          <p class="text-[#042C53] text-2xl font-bold">{{ formatRevenue(vm.weekRevenue) }}</p>
+          <p class="text-[#5F5E5A] text-xs mt-0.5">esta semana</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-[#E8E6DF] p-4">
+          <p class="text-[#888780] text-xs mb-1">Próximo</p>
+          <ng-container *ngIf="vm.nextAppointment as next; else noNext">
+            <p class="text-[#042C53] text-base font-bold leading-tight">
+              {{ next.service.name }} · {{ formatTime(next.scheduledAt) }}
+            </p>
+            <p class="text-[#5F5E5A] text-xs mt-0.5">{{ next.client.name }}</p>
+          </ng-container>
+          <ng-template #noNext>
+            <p class="text-[#042C53] text-base font-bold leading-tight">—</p>
+            <p class="text-[#5F5E5A] text-xs mt-0.5">Sem próximos</p>
+          </ng-template>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-[#E8E6DF] overflow-hidden">
+        <div class="grid grid-cols-6 border-b border-[#E8E6DF]">
+          <div class="p-4 border-r border-[#E8E6DF]">
+            <p class="text-[#888780] text-xs font-medium">Horário</p>
+          </div>
+          <ng-container *ngFor="let day of vm.weekDays; let last = last">
+            <div
+              class="p-4 text-center"
+              [ngClass]="{
+                'border-r border-[#E8E6DF]': !last,
+                'bg-[#EBF4FD]': day.isToday,
+              }"
+            >
+              <p
+                class="text-xs font-medium"
+                [ngClass]="day.isToday ? 'text-[#185FA5]' : 'text-[#888780]'"
+              >
+                {{ day.label }}
+              </p>
+              <ng-container *ngIf="day.isToday; else normalDayNum">
+                <div
+                  class="w-7 h-7 rounded-full bg-[#185FA5] flex items-center justify-center mx-auto mt-0.5"
+                >
+                  <span class="text-white text-sm font-bold">{{ day.dayNum }}</span>
+                </div>
+              </ng-container>
+              <ng-template #normalDayNum>
+                <p class="text-[#2C2C2A] text-sm font-bold mt-0.5">{{ day.dayNum }}</p>
+              </ng-template>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="divide-y divide-[#E8E6DF]">
+          <div *ngFor="let row of vm.calendarGrid" class="grid grid-cols-6">
+            <div class="p-3 border-r border-[#E8E6DF] flex items-start">
+              <span class="text-[#888780] text-xs font-medium">{{ row.time }}</span>
+            </div>
+            <ng-container *ngFor="let cell of row.cells; let last = last">
+              <div
+                class="p-2"
+                [ngClass]="{
+                  'border-r border-[#E8E6DF]': !last,
+                  'bg-[#EBF4FD]': cell.isToday,
+                }"
+              >
+                <div
+                  *ngIf="cell.appointment as appt"
+                  [ngClass]="getAppointmentClass(cell.isToday)"
+                  class="cursor-pointer"
+                  (click)="openAppointment(appt)"
+                >
+                  <p [ngClass]="getAppointmentNameClass(cell.isToday)">{{ appt.service.name }}</p>
+                  <p [ngClass]="getAppointmentSubtextClass(cell.isToday)">{{ appt.client.name }}</p>
+                  <p [ngClass]="getAppointmentTimeClass(cell.isToday)">
+                    {{ formatTime(appt.scheduledAt) }}–{{ formatTime(appt.endsAt) }}
+                  </p>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div
+    *ngIf="selectedAppointment"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+    (click)="closeAppointment()"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex items-start justify-between mb-4">
+        <h2 class="text-[#042C53] text-lg font-semibold">Encerrar atendimento</h2>
+        <button
+          (click)="closeAppointment()"
+          class="text-[#888780] hover:text-[#042C53] transition-colors"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M18 6 6 18M6 6l12 12"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div class="bg-[#F7F5EF] rounded-xl p-4 mb-5 space-y-1">
+        <p class="text-[#042C53] font-semibold text-sm">{{ selectedAppointment.service.name }}</p>
+        <p class="text-[#5F5E5A] text-sm">{{ selectedAppointment.client.name }}</p>
+        <p class="text-[#888780] text-xs">
+          {{ formatTime(selectedAppointment.scheduledAt) }}–{{
+            formatTime(selectedAppointment.endsAt)
+          }}
+        </p>
+      </div>
+
+      <ng-container *ngIf="selectedAppointment.status === AppointmentStatus.SCHEDULED; else alreadyClosed">
+        <p class="text-[#5F5E5A] text-sm mb-3">Como foi o atendimento?</p>
+        <div class="space-y-2">
+          <button
+            (click)="updateStatus(AppointmentStatus.COMPLETED)"
+            [disabled]="updatingStatus"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-[#D1FAE5] hover:bg-[#A7F3D0] text-[#065F46] text-sm font-medium transition-colors disabled:opacity-50"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M20 6 9 17l-5-5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Realizado
+          </button>
+          <button
+            (click)="updateStatus(AppointmentStatus.NO_SHOW)"
+            [disabled]="updatingStatus"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-[#FEF3C7] hover:bg-[#FDE68A] text-[#92400E] text-sm font-medium transition-colors disabled:opacity-50"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Não compareceu
+          </button>
+          <button
+            (click)="updateStatus(AppointmentStatus.CANCELLED)"
+            [disabled]="updatingStatus"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium transition-colors disabled:opacity-50"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
+              <path
+                d="M15 9 9 15M9 9l6 6"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            Cancelado pelo cliente
+          </button>
+        </div>
+      </ng-container>
+
+      <ng-template #alreadyClosed>
+        <p class="text-[#5F5E5A] text-sm text-center py-2">
+          Atendimento encerrado como
+          <span class="font-semibold text-[#042C53]">{{
+            statusLabel(selectedAppointment.status)
+          }}</span
+          >.
+        </p>
+        <button
+          (click)="closeAppointment()"
+          class="mt-4 w-full bg-[#F7F5EF] hover:bg-[#E8E6DF] text-[#2C2C2A] text-sm font-medium px-4 py-2.5 rounded-xl transition-colors"
+        >
+          Fechar
+        </button>
+      </ng-template>
+    </div>
+  </div>
+</div>

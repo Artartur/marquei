@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { StoreService } from '../services/store.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-register',
   standalone: false,
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css',
 })
 export class RegisterComponent {
   public registerForm: FormGroup;
@@ -20,6 +20,7 @@ export class RegisterComponent {
     private authService: AuthService,
     private fb: FormBuilder,
     private storeService: StoreService,
+    private toast: ToastService,
   ) {
     this.activeTab = this.storeService.activeTab;
 
@@ -43,10 +44,12 @@ export class RegisterComponent {
     this.authService.register(this.registerForm.value).subscribe({
       next: () => {
         this.isLoading = false;
-        console.log('cadastrou');
+        this.toast.success('Cadastro realizado! Faça login para continuar.');
+        this.storeService.updateActiveTab('login');
       },
       error: () => {
         this.isLoading = false;
+        this.toast.error('Erro ao criar conta. Verifique os dados e tente novamente.');
       },
     });
   }

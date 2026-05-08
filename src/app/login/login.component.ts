@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { StoreService } from '../services/store.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-login',
   standalone: false,
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
 })
 export class LoginComponent {
   public loginForm: FormGroup;
@@ -20,6 +20,7 @@ export class LoginComponent {
     private authService: AuthService,
     private fb: FormBuilder,
     private storeService: StoreService,
+    private toast: ToastService,
   ) {
     this.activeTab = this.storeService.activeTab;
 
@@ -44,12 +45,10 @@ export class LoginComponent {
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
         this.isLoading = false;
-        console.log('entrou');
-        // redirecionar, ex: this.router.navigate(['/dashboard'])
       },
       error: () => {
         this.isLoading = false;
-        // tratar erro
+        this.toast.error('E-mail ou senha incorretos.');
       },
     });
   }

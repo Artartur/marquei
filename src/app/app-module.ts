@@ -5,6 +5,7 @@ import {
   PLATFORM_ID,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
+  TransferState,
 } from '@angular/core';
 import { isPlatformBrowser, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -19,6 +20,7 @@ import { authInterceptor } from './interceptors/auth.interceptors';
 import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
 import { of } from 'rxjs';
+import { API_URL, API_URL_STATE_KEY } from '../env/environments';
 
 registerLocaleData(localePt);
 
@@ -26,6 +28,12 @@ registerLocaleData(localePt);
   declarations: [AppComponent, ToastComponent],
   imports: [BrowserModule, CommonModule, AppRoutingModule, ReactiveFormsModule],
   providers: [
+    {
+      provide: API_URL,
+      useFactory: (transferState: TransferState) =>
+        transferState.get(API_URL_STATE_KEY, 'http://localhost:3000'),
+      deps: [TransferState],
+    },
     provideAppInitializer(() => {
       const authService = inject(AuthService);
       const platformId = inject(PLATFORM_ID);

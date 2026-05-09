@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Login } from '../interfaces/login.interface';
-import { apiUrl } from '../../env/environments';
+import { API_URL } from '../../env/environments';
 import { AuthResponse } from '../interfaces/auth-response.interface';
 import { StoreService } from './store.service';
 import { User } from '../interfaces/user.interface';
@@ -13,6 +13,8 @@ import { UserRole } from '../utils/enums/UserRole';
   providedIn: 'root',
 })
 export class AuthService {
+  private apiUrl = inject(API_URL);
+
   constructor(
     private httpClient: HttpClient,
     private router: Router,
@@ -31,13 +33,13 @@ export class AuthService {
 
   public initSession() {
     return this.httpClient
-      .post<Omit<AuthResponse, 'user'>>(`${apiUrl}/auth/refresh`, {}, { withCredentials: true })
+      .post<Omit<AuthResponse, 'user'>>(`${this.apiUrl}/auth/refresh`, {}, { withCredentials: true })
       .pipe(
         tap((res) => {
           this.storeService.updateAcessToken(res.accessToken);
         }),
         switchMap(() =>
-          this.httpClient.get<Omit<User, 'password'>>(`${apiUrl}/auth/me`, {
+          this.httpClient.get<Omit<User, 'password'>>(`${this.apiUrl}/auth/me`, {
             withCredentials: true,
           }),
         ),
@@ -52,7 +54,7 @@ export class AuthService {
 
   public login(login: Login) {
     return this.httpClient
-      .post<AuthResponse>(`${apiUrl}/auth/login`, login, {
+      .post<AuthResponse>(`${this.apiUrl}/auth/login`, login, {
         withCredentials: true,
       })
       .pipe(
@@ -68,7 +70,7 @@ export class AuthService {
   }
 
   public logout() {
-    return this.httpClient.post(`${apiUrl}/auth/logout`, {}, { withCredentials: true }).pipe(
+    return this.httpClient.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true }).pipe(
       tap(() => {
         this.logoutClear();
         this.router.navigate(['/']);
@@ -81,7 +83,7 @@ export class AuthService {
   }
 
   public register(dto: User) {
-    return this.httpClient.post<AuthResponse>(`${apiUrl}/auth/sign-up`, dto, {
+    return this.httpClient.post<AuthResponse>(`${this.apiUrl}/auth/sign-up`, dto, {
       withCredentials: true,
     });
   }

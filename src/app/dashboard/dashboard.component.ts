@@ -82,22 +82,16 @@ export class DashboardComponent {
     this.services$ = this.servicesService.findAll();
   }
 
+  private isToday(iso: string): boolean {
+    const tz = 'America/Sao_Paulo';
+    const today = new Date().toLocaleDateString('sv', { timeZone: tz });
+    return new Date(iso).toLocaleDateString('sv', { timeZone: tz }) === today;
+  }
+
   public getAppointmentsByProfessional() {
     this.appointmentsByProfessional$ = this.appointmentService.getAppointments().pipe(
       map((appointments) => {
-        const today = new Date();
-
-        const todayAppointments = appointments.filter((appointment) => {
-          const date = new Date(appointment.scheduledAt);
-
-          date.setHours(date.getHours() - 3);
-
-          return (
-            date.getDate() === today.getDate() &&
-            date.getMonth() === today.getMonth() &&
-            date.getFullYear() === today.getFullYear()
-          );
-        });
+        const todayAppointments = appointments.filter((a) => this.isToday(a.scheduledAt));
 
         const grouped = todayAppointments.reduce(
           (acc, appointment) => {
@@ -130,31 +124,16 @@ export class DashboardComponent {
   public getTodayAppointments() {
     this.todayAppointments$ = this.appointmentService.getAppointments().pipe(
       map((appointments) => {
-        const today = new Date();
-
+        const tz = 'America/Sao_Paulo';
         return appointments
+          .filter((a) => this.isToday(a.scheduledAt))
           .map((appointment) => {
             const date = new Date(appointment.scheduledAt);
-
-            date.setHours(date.getHours() - 3);
-
             return {
               ...appointment,
               date,
-              formattedHour: date.toLocaleTimeString('pt-BR', {
-                hour: '2-digit',
-                minute: '2-digit',
-              }),
+              formattedHour: date.toLocaleTimeString('pt-BR', { timeZone: tz, hour: '2-digit', minute: '2-digit' }),
             };
-          })
-          .filter((appointment) => {
-            const date = appointment.date;
-
-            return (
-              date.getDate() === today.getDate() &&
-              date.getMonth() === today.getMonth() &&
-              date.getFullYear() === today.getFullYear()
-            );
           })
           .sort((a, b) => a.date.getTime() - b.date.getTime());
       }),
@@ -164,21 +143,8 @@ export class DashboardComponent {
   public getTodayRevenue() {
     this.todayRevenue$ = this.appointmentService.getAppointments().pipe(
       map((appointments) => {
-        const today = new Date();
-
         return appointments
-          .filter((appointment) => {
-            const date = new Date(appointment.scheduledAt);
-
-            date.setHours(date.getHours() - 3);
-
-            const isToday =
-              date.getDate() === today.getDate() &&
-              date.getMonth() === today.getMonth() &&
-              date.getFullYear() === today.getFullYear();
-
-            return isToday && appointment.status !== 'CANCELLED';
-          })
+          .filter((appointment) => this.isToday(appointment.scheduledAt) && appointment.status !== 'CANCELLED')
           .reduce((total, appointment) => {
             return total + Number(appointment.service.price);
           }, 0);

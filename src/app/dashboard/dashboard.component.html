@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-[#F7F5EF] flex" style="font-family: 'DM Sans', sans-serif">
-  <aside class="hidden lg:flex flex-col w-60 bg-[#042C53] min-h-screen p-5">
+  <aside class="hidden lg:flex flex-col w-60 bg-[#042C53] sticky top-0 h-screen p-5">
     <div class="flex items-center gap-3 mb-10">
       <div class="w-8 h-8 rounded-lg bg-[#378ADD] flex items-center justify-center">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -139,6 +139,23 @@
         </svg>
         Serviços
       </a>
+      <a
+        routerLink="/dashboard/importacao"
+        routerLinkActive
+        #rla5="routerLinkActive"
+        [ngClass]="
+          rla5.isActive
+            ? 'bg-[#185FA5] text-white'
+            : 'text-[#85B7EB] hover:bg-[#0C447C]/60 hover:text-white'
+        "
+        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Importação
+      </a>
     </nav>
 
     <div class="border-t border-[#185FA5]/40 pt-4 mt-4">
@@ -146,9 +163,8 @@
         <div
           class="w-8 h-8 rounded-full bg-[#378ADD] flex items-center justify-center text-white text-xs font-semibold shrink-0"
         ></div>
-        <div class="overflow-hidden space-y-1">
+        <div class="overflow-hidden">
           <p class="text-white text-sm font-medium truncate">{{ currentUser?.name }}</p>
-          <p class="text-[#85B7EB] text-xs">Gerente</p>
           <button
             class="text-white text-xs font-medium cursor-pointer"
             type="button"

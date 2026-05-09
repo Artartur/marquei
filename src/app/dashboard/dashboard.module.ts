@@ -9,6 +9,7 @@ import { AppointmentsComponent } from './appointments/appointments.component';
 import { ClientsComponent } from './clients/clients.component';
 import { ServicesPageComponent } from './services-page/services-page.component';
 import { ProfessionalsComponent } from './professionals/professionals.component';
+import { ImportPageComponent } from './import-page/import-page.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { ProfessionalsComponent } from './professionals/professionals.component'
     ClientsComponent,
     DashboardSidebarComponent,
     DashboardComponent,
+    ImportPageComponent,
     ServiceModalComponent,
     ServicesPageComponent,
     ProfessionalsComponent,

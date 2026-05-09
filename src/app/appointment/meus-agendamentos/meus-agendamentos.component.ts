@@ -178,11 +178,16 @@ export class MeusAgendamentosComponent implements OnInit {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
+      timeZone: 'America/Sao_Paulo',
     });
   }
 
   public formatSlot(iso: string): string {
-    return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return new Date(iso).toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Sao_Paulo',
+    });
   }
 
   public isToday(date: Date | null): boolean {

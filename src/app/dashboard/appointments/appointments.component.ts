@@ -56,19 +56,12 @@ export class AppointmentsComponent implements OnInit {
 
         const formattedAppointments = filtered.map((appoint) => {
           const date = new Date(appoint.scheduledAt);
-          date.setHours(date.getHours() - 3);
+          const tz = { timeZone: 'America/Sao_Paulo' };
 
           return {
             ...appoint,
-            formattedHour: date.toLocaleTimeString('pt-BR', {
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
-            formattedDate: date.toLocaleDateString('pt-BR', {
-              day: '2-digit',
-              month: 'long',
-              year: 'numeric',
-            }),
+            formattedHour: date.toLocaleTimeString('pt-BR', { ...tz, hour: '2-digit', minute: '2-digit' }),
+            formattedDate: date.toLocaleDateString('pt-BR', { ...tz, day: '2-digit', month: 'long', year: 'numeric' }),
           };
         });
 
@@ -117,9 +110,11 @@ export class AppointmentsComponent implements OnInit {
   }
 
   public formatTime(iso: string): string {
-    const date = new Date(iso);
-    date.setHours(date.getHours() - 3);
-    return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return new Date(iso).toLocaleTimeString('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
 
   public statusClass(status: string): string {

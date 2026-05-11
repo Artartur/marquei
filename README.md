@@ -22,7 +22,7 @@ Sistema de agendamento para salões e clínicas com três perfis de acesso: **Ge
 
 - Node.js 20+
 - npm 11+
-- Backend do Marquei rodando https://marquei-backend.onrender.com/
+- Backend do Marquei rodando https://marquei-backend.onrender.com/ ou 
 
 ### 1. Clone e instale as dependências
 
@@ -41,7 +41,7 @@ cp .env.example .env
 Edite `.env` com a URL da API:
 
 ```
-API_URL=http://localhost:3000
+API_URL=http://localhost:3000 ou https://marquei-backend.onrender.com
 ```
 
 ### 3. Inicie o servidor de desenvolvimento
@@ -67,7 +67,7 @@ A variável `API_URL` é lida em tempo de execução pelo servidor SSR — não 
 
 | Variável | Descrição | Padrão |
 |---|---|---|
-| `API_URL` | URL base da API NestJS | `https://marquei-backend.onrender.com` |
+| `API_URL` | URL base da API NestJS | `https://marquei-backend.onrender.com ou http://localhost:3000` |
 
 ---
 
@@ -77,9 +77,9 @@ Crie os usuários via `/register` ou pelo seed do backend. Um por perfil:
 
 | Perfil | E-mail | Senha |
 |---|---|---|
-| Gestor | `gestor@marquei.com` | `senha123` |
-| Profissional | `profissional@marquei.com` | `senha123` |
-| Cliente | `cliente@marquei.com` | `senha123` |
+| Gestor | `maria@test.com` | `test123` |
+| Profissional | `artur@email.com` | `test123` |
+| Cliente | `bob@email.com` | `test123` |
 
 > O login redireciona automaticamente para a área correta conforme o perfil do usuário.
 
@@ -95,11 +95,10 @@ Crie os usuários via `/register` ou pelo seed do backend. Um por perfil:
 
 ## O que ficou de fora
 
-- **Testes automatizados** — nenhum teste unitário ou e2e foi escrito; o foco foi na entrega das funcionalidades.
+- **Testes unitários** — nenhum teste unitário foi escrito;
 - **Responsividade mobile** — a sidebar some em telas menores (`hidden lg:flex`) mas não há navegação alternativa para mobile.
 - **Paginação nas listas** — clientes, profissionais e agendamentos carregam todos os registros de uma vez.
 - **Notificações em tempo real** — o status dos agendamentos é atualizado por polling manual; WebSockets ou SSE dariam uma UX melhor.
-- **i18n** — locale fixado em `pt-BR`; internacionalização não foi considerada.
 
 **Com mais tempo:**
 separaria a sidebar inline do `dashboard.component.html` no mesmo componente reutilizável que os outros módulos já usam, eliminando a duplicação de código que causou o bug do link de Importação; adicionaria testes de integração nas rotas críticas (login, agendamento, importação); e implementaria paginação server-side nas listagens.

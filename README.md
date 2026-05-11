@@ -22,7 +22,7 @@ Sistema de agendamento para salões e clínicas com três perfis de acesso: **Ge
 
 - Node.js 20+
 - npm 11+
-- Backend do Marquei rodando (veja o repositório da API)
+- Backend do Marquei rodando https://marquei-backend.onrender.com/
 
 ### 1. Clone e instale as dependências
 
@@ -67,7 +67,7 @@ A variável `API_URL` é lida em tempo de execução pelo servidor SSR — não 
 
 | Variável | Descrição | Padrão |
 |---|---|---|
-| `API_URL` | URL base da API NestJS | `http://localhost:3000` |
+| `API_URL` | URL base da API NestJS | `https://marquei-backend.onrender.com` |
 
 ---
 

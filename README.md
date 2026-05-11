@@ -1,30 +1,30 @@
 # Marquei
 
-Sistema de agendamento para salões e clínicas com três perfis de acesso: **Gestor**, **Profissional** e **Cliente**.
+Scheduling system for salons and clinics with three access profiles: **Manager**, **Professional**, and **Client**.
 
 ---
 
 ## Stack
 
-| Camada | Tecnologia | Justificativa |
+| Layer | Technology | Rationale |
 |---|---|---|
-| Frontend | Angular 21 + SSR | Framework opinativo com injeção de dependência nativa, roteamento robusto e suporte a SSR sem configuração extra — adequado para um produto que pode precisar de SEO no futuro |
-| Estilos | Tailwind CSS v4 | Utility-first sem CSS customizado; v4 tem melhor performance de build e sintaxe de tema via CSS nativo |
-| Reatividade | RxJS + Angular Signals | Signals para estado global simples (auth), RxJS para streams de dados e filtros reativos nas listas |
-| HTTP | Angular HttpClient + Interceptor | Refresh automático de token transparente para o restante da aplicação |
-| Backend | NestJS + Supabase + Prisma | Repositório separado |
+| Frontend | Angular 21 + SSR | Opinionated framework with native dependency injection, robust routing, and SSR support with no extra configuration — suitable for a product that may need SEO in the future |
+| Estilos | Tailwind CSS v4 | Utility-first with no custom CSS; v4 has better build performance and theme syntax via native CSS |
+| Reatividade | RxJS + Angular Signals | Signals for simple global state (auth), RxJS for data streams and reactive filters in lists |
+| HTTP | Angular HttpClient + Interceptor | Transparent automatic token refresh for the rest of the application |
+| Backend | NestJS + Supabase + Prisma | Separate repository |
 
 ---
 
-## Como rodar localmente
+## Running locally
 
-### Pré-requisitos
+### Prerequisites
 
 - Node.js 20+
 - npm 11+
-- Backend do Marquei rodando https://marquei-backend.onrender.com/ ou 
+- Marquei backend running at https://marquei-backend.onrender.com/ or locally
 
-### 1. Clone e instale as dependências
+### 1. Clone and install dependencies
 
 ```bash
 git clone <url-do-repositorio>
@@ -32,73 +32,73 @@ cd marquei
 npm install
 ```
 
-### 2. Configure as variáveis de ambiente
+### 2. Set up environment variables
 
 ```bash
 cp .env.example .env
 ```
 
-Edite `.env` com a URL da API:
+Edit `.env` with the API URL:
 
 ```
-API_URL=http://localhost:3000 ou https://marquei-backend.onrender.com
+API_URL=http://localhost:3000 or https://marquei-backend.onrender.com
 ```
 
-### 3. Inicie o servidor de desenvolvimento
+### 3. Start the development server
 
 ```bash
 npm start
 ```
 
-O app estará disponível em `http://localhost:4200`.
+The app will be available at `http://localhost:4200`.
 
-### 4. (Opcional) Build com SSR
+### 4. (Optional) Build with SSR
 
 ```bash
 npm run build
 node dist/marquei/server/server.mjs
 ```
 
-A variável `API_URL` é lida em tempo de execução pelo servidor SSR — não precisa rebuildar para trocar o endpoint.
+The `API_URL` variable is read at runtime by the SSR server — no rebuild needed to switch endpoints.
 
 ---
 
-## Variáveis de ambiente
+## Environment variables
 
-| Variável | Descrição | Padrão |
+| Variable | Description | Default |
 |---|---|---|
-| `API_URL` | URL base da API NestJS | `https://marquei-backend.onrender.com ou http://localhost:3000` |
+| `API_URL` | NestJS API base URL | `https://marquei-backend.onrender.com or http://localhost:3000` |
 
 ---
 
-## Credenciais de teste
+## Test credentials
 
-Crie os usuários via `/register` ou pelo seed do backend. Um por perfil:
+Create users via `/register` or through the backend seed. One per profile:
 
-| Perfil | E-mail | Senha |
+| Profile | E-mail | password |
 |---|---|---|
-| Gestor | `maria@test.com` | `test123` |
-| Profissional | `artur@email.com` | `test123` |
-| Cliente | `bob@email.com` | `test123` |
+| Manager | `maria@test.com` | `test123` |
+| Professional | `artur@email.com` | `test123` |
+| Client | `bob@email.com` | `test123` |
 
-> O login redireciona automaticamente para a área correta conforme o perfil do usuário.
-
----
-
-## Decisões de arquitetura
-
-**Roteamento e isolamento por perfil.** Cada perfil (MANAGER, PROFESSIONAL, CLIENT) carrega um módulo lazy-loaded próprio, protegido por dois guards em sequência: `authGuard` verifica a sessão ativa e `roleGuard` valida o papel antes de renderizar qualquer rota. Isso evita que componentes de um perfil sejam carregados no bundle de outro e torna simples adicionar novos perfis no futuro.
-
-**Autenticação stateless com refresh transparente.** O `accessToken` vive apenas em memória (Angular Signal), nunca em `localStorage`. O `refreshToken` é um cookie HttpOnly gerenciado pelo backend. O interceptor de HTTP captura respostas 401, solicita um novo token em `/auth/refresh` e reexecuta a requisição original — tudo invisível para os serviços e componentes. Na inicialização do app, `initSession()` tenta restaurar a sessão via refresh antes de renderizar qualquer rota protegida.
+> Login automatically redirects to the correct area based on the user's profile.
 
 ---
 
-## O que ficou de fora
+## Architecture decisions
 
-- **Testes unitários** — nenhum teste unitário foi escrito;
-- **Responsividade mobile** — a sidebar some em telas menores (`hidden lg:flex`) mas não há navegação alternativa para mobile.
-- **Paginação nas listas** — clientes, profissionais e agendamentos carregam todos os registros de uma vez.
-- **Notificações em tempo real** — o status dos agendamentos é atualizado por polling manual; WebSockets ou SSE dariam uma UX melhor.
+**Routing and profile isolation.** Each profile (MANAGER, PROFESSIONAL, CLIENT) loads its own lazy-loaded module, protected by two guards in sequence: `authGuard` checks the active session and  `roleGuard` vvalidates the role before rendering any route. This prevents components from one profile from being loaded into another profile's bundle and makes it straightforward to add new profiles in the future.
 
-**Com mais tempo:**
-separaria a sidebar inline do `dashboard.component.html` no mesmo componente reutilizável que os outros módulos já usam, eliminando a duplicação de código que causou o bug do link de Importação; adicionaria testes de integração nas rotas críticas (login, agendamento, importação); e implementaria paginação server-side nas listagens.
+**Stateless authentication with transparent refresh.** The `accessToken` vlives only in memory (Angular Signal), never in `localStorage`. The `refreshToken` is an HttpOnly cookie managed by the backend. The HTTP interceptor catches 401 responses, requests a new token at `/auth/refresh` and retries the original request, all invisible to services and components. On app initialization, `initSession()` attempts to restore the session via refresh before rendering any protected route.
+
+---
+
+## What was left out
+
+- **Unit tests** — no unit tests were written;
+- **Mobile responsiveness** — the sidebar is hidden on smaller screens (`hidden lg:flex`) but there is no alternative navigation for mobile.
+- **Pagination in lists** — clients, professionals, and appointments all load every record at once.
+- **Real-time notifications** — appointment status is updated via manual polling; WebSockets or SSE would provide a better UX.
+
+**Given more time:**
+I would extract the inline sidebar from `dashboard.component.html` into the same reusable component already used by the other modules, eliminating the code duplication that caused the Import link bug; add integration tests for the critical routes (login, scheduling, import); and implement server-side pagination for the listings.

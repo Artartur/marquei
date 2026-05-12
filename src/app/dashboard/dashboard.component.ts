@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ServicesService } from '../services/services.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Service } from '../interfaces/service.interface';
-import { map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { StoreService } from '../services/store.service';
 import { User } from '../interfaces/user.interface';
 import { AuthService } from '../services/auth.service';
@@ -14,6 +14,7 @@ import { DashboardMetricsService } from '../services/dashboard-metrics.service';
 import { DashboardMetrics } from '../interfaces/dashboard-metrics.interface';
 
 type TodayAppointment = ClientAppointment & { formattedHour: string };
+type UserCounts = { clients: number; professionals: number };
 
 @Component({
   selector: 'app-dashboard',
@@ -24,19 +25,17 @@ export class DashboardComponent implements OnInit {
   public createServiceForm!: FormGroup;
   public services$!: Observable<Service[]>;
   public todayAppointments$!: Observable<TodayAppointment[]>;
+  public metrics$!: Observable<DashboardMetrics | null>;
+  public userCounts$!: Observable<UserCounts | null>;
 
   public currentUser: User | null = null;
   public selectedService: Service | null = null;
   public isServiceModalOpen = false;
 
-  public clientsCount = 0;
-  public professionalsCount = 0;
-
-  public metrics: DashboardMetrics | null = null;
-  public loadingMetrics = false;
-
   public fromDate: string;
   public toDate: string;
+
+  private period$!: BehaviorSubject<{ from: string; to: string }>;
 
   constructor(
     private fb: FormBuilder,
@@ -51,6 +50,7 @@ export class DashboardComponent implements OnInit {
     this.toDate = today.toLocaleDateString('sv', { timeZone: 'America/Sao_Paulo' });
     this.fromDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`;
     this.currentUser = this.storeService.currentUser();
+    this.period$ = new BehaviorSubject({ from: this.fromDate, to: this.toDate });
   }
 
   ngOnInit() {
@@ -61,10 +61,22 @@ export class DashboardComponent implements OnInit {
       price: [0, [Validators.required]],
     });
 
+    this.metrics$ = this.period$.pipe(
+      switchMap(({ from, to }) => this.metricsService.getMetrics(from, to).pipe(startWith(null))),
+      shareReplay(1),
+    );
+
+    this.userCounts$ = this.usersService.findAll().pipe(
+      map((users) => ({
+        clients: users.filter((u) => u.role === UserRole.CLIENT).length,
+        professionals: users.filter((u) => u.role === UserRole.PROFESSIONAL).length,
+      })),
+      startWith(null),
+      shareReplay(1),
+    );
+
     this.getServices();
     this.getTodayAppointments();
-    this.getUserCounts();
-    this.loadMetrics();
   }
 
   private isToday(iso: string): boolean {
@@ -73,8 +85,8 @@ export class DashboardComponent implements OnInit {
     return new Date(iso).toLocaleDateString('sv', { timeZone: tz }) === today;
   }
 
-  public avgOccupation(): number {
-    const profs = this.metrics?.occupationByProfessional ?? [];
+  public avgOccupation(metrics: DashboardMetrics | null): number {
+    const profs = metrics?.occupationByProfessional ?? [];
     if (!profs.length) return 0;
     return profs.reduce((sum, p) => sum + p.occupationRate, 0) / profs.length;
   }
@@ -118,24 +130,6 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-  public getUserCounts() {
-    this.usersService.findAll().subscribe((users) => {
-      this.professionalsCount = users.filter((u) => u.role === UserRole.PROFESSIONAL).length;
-      this.clientsCount = users.filter((u) => u.role === UserRole.CLIENT).length;
-    });
-  }
-
-  public loadMetrics(): void {
-    this.loadingMetrics = true;
-    this.metricsService.getMetrics(this.fromDate, this.toDate).subscribe({
-      next: (data) => {
-        this.metrics = data;
-        this.loadingMetrics = false;
-      },
-      error: () => (this.loadingMetrics = false),
-    });
-  }
-
   public logout(): void {
     this.authService.logout().subscribe();
   }
@@ -145,7 +139,9 @@ export class DashboardComponent implements OnInit {
   }
 
   public onPeriodChange(): void {
-    if (this.fromDate && this.toDate) this.loadMetrics();
+    if (this.fromDate && this.toDate) {
+      this.period$.next({ from: this.fromDate, to: this.toDate });
+    }
   }
 
   public onServiceSaved(): void {

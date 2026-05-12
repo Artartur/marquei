@@ -226,369 +226,379 @@
     </header>
 
     <main class="flex-1 p-6 overflow-auto space-y-6">
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-2xl border border-[#E8E6DF] p-5">
-          <div class="flex items-center justify-between mb-3">
-            <p class="text-[#888780] text-xs font-medium">Agendamentos no período</p>
-            <div class="w-7 h-7 rounded-lg bg-[#EBF4FD] flex items-center justify-center">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <rect
-                  x="3"
-                  y="4"
-                  width="18"
-                  height="18"
-                  rx="2"
-                  stroke="#185FA5"
-                  stroke-width="1.5"
-                />
-                <path
-                  d="M8 2v4M16 2v4M3 10h18"
-                  stroke="#185FA5"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </div>
-          </div>
-          <p class="text-[#042C53] text-3xl font-bold">
-            <ng-container *ngIf="!loadingMetrics">{{
-              metrics?.totalAppointments ?? '—'
-            }}</ng-container>
-            <span
-              *ngIf="loadingMetrics"
-              class="inline-block w-10 h-8 bg-[#E8E6DF] rounded animate-pulse"
-            ></span>
-          </p>
-          <p class="text-[#888780] text-xs mt-1">
-            {{ clientsCount }} clientes · {{ professionalsCount }} profissionais
-          </p>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-[#E8E6DF] p-5">
-          <div class="flex items-center justify-between mb-3">
-            <p class="text-[#888780] text-xs font-medium">Faturamento estimado</p>
-            <div class="w-7 h-7 rounded-lg bg-[#EBF4FD] flex items-center justify-center">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-                  stroke="#185FA5"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </div>
-          </div>
-          <p class="text-[#042C53] text-3xl font-bold">
-            <ng-container *ngIf="!loadingMetrics">
-              {{ metrics?.estimatedRevenue ?? 0 | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
-            </ng-container>
-            <span
-              *ngIf="loadingMetrics"
-              class="inline-block w-24 h-8 bg-[#E8E6DF] rounded animate-pulse"
-            ></span>
-          </p>
-          <p class="text-[#888780] text-xs mt-1">Agendados + concluídos</p>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-[#E8E6DF] p-5">
-          <div class="flex items-center justify-between mb-3">
-            <p class="text-[#888780] text-xs font-medium">Taxa de no-show</p>
-            <div class="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
-                  stroke="#dc2626"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </div>
-          </div>
-          <p class="text-[#042C53] text-3xl font-bold">
-            <ng-container *ngIf="!loadingMetrics">
-              {{ (metrics?.noShowRate ?? 0) * 100 | number: '1.1-1' : 'pt-BR' }}%
-            </ng-container>
-            <span
-              *ngIf="loadingMetrics"
-              class="inline-block w-14 h-8 bg-[#E8E6DF] rounded animate-pulse"
-            ></span>
-          </p>
-          <p class="text-[#888780] text-xs mt-1">Clientes que não compareceram</p>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-[#E8E6DF] p-5">
-          <div class="flex items-center justify-between mb-3">
-            <p class="text-[#888780] text-xs font-medium">Ocupação média</p>
-            <div class="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M22 12h-4l-3 9L9 3l-3 9H2"
-                  stroke="#16a34a"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-          </div>
-          <p class="text-[#042C53] text-3xl font-bold">
-            <ng-container *ngIf="!loadingMetrics">
-              {{ avgOccupation() * 100 | number: '1.1-1' : 'pt-BR' }}%
-            </ng-container>
-            <span
-              *ngIf="loadingMetrics"
-              class="inline-block w-14 h-8 bg-[#E8E6DF] rounded animate-pulse"
-            ></span>
-          </p>
-          <p class="text-[#888780] text-xs mt-1">Média entre profissionais</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-white rounded-2xl border border-[#E8E6DF] overflow-hidden">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-[#E8E6DF]">
-            <h2 class="text-[#042C53] text-sm font-semibold">Agenda de hoje</h2>
-            <a
-              routerLink="/dashboard/agendamentos"
-              class="text-[#185FA5] text-xs font-medium hover:text-[#378ADD] transition-colors"
-              >Ver histórico</a
-            >
-          </div>
-          <div class="divide-y divide-[#E8E6DF]">
-            <div
-              *ngFor="let a of todayAppointments$ | async"
-              class="flex items-center gap-4 px-6 py-3.5"
-            >
-              <div class="text-right w-12 shrink-0">
-                <p class="text-[#042C53] text-xs font-bold">{{ a.formattedHour }}</p>
-              </div>
-              <div class="w-px h-8 bg-[#E8E6DF]"></div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[#2C2C2A] text-sm font-semibold truncate">{{ a.client.name }}</p>
-                <p class="text-[#888780] text-xs">
-                  {{ a.service.name }} · {{ a.professional.user.name }}
-                </p>
-              </div>
-              <span
-                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium shrink-0"
-                [ngClass]="statusClass(a.status)"
-              >
-                {{ statusLabel(a.status) }}
-              </span>
-            </div>
-            <div *ngIf="(todayAppointments$ | async)?.length === 0" class="px-6 py-10 text-center">
-              <p class="text-[#888780] text-sm">Nenhum agendamento hoje.</p>
-            </div>
-          </div>
-        </div>
-
-        <form
-          class="bg-white rounded-2xl border border-[#E8E6DF] p-5 self-start"
-          [formGroup]="createServiceForm"
-          (ngSubmit)="createService()"
-        >
-          <h2 class="text-[#042C53] text-sm font-semibold mb-4">Cadastrar serviço</h2>
-          <div class="space-y-3">
-            <div>
-              <label class="block text-xs font-medium text-[#2C2C2A] mb-1">Nome do serviço</label>
-              <input
-                type="text"
-                formControlName="name"
-                placeholder="Ex: Corte feminino"
-                class="w-full px-3 py-2.5 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
-              />
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-medium text-[#2C2C2A] mb-1">Preço (R$)</label>
-                <input
-                  type="number"
-                  min="0"
-                  formControlName="price"
-                  placeholder="0,00"
-                  class="w-full px-3 py-2.5 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
-                />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-[#2C2C2A] mb-1">Duração (min)</label>
-                <input
-                  type="number"
-                  min="0"
-                  formControlName="durationMinutes"
-                  placeholder="60"
-                  class="w-full px-3 py-2.5 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
-                />
-              </div>
-            </div>
-            <button
-              type="submit"
-              class="w-full bg-[#185FA5] hover:bg-[#0C447C] text-white font-semibold py-2.5 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2" stroke-linecap="round" />
-              </svg>
-              Salvar serviço
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white rounded-2xl border border-[#E8E6DF] overflow-hidden">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-[#E8E6DF]">
-            <h2 class="text-[#042C53] text-sm font-semibold">Ocupação por profissional</h2>
-            <a
-              routerLink="/dashboard/profissionais"
-              class="text-[#185FA5] text-xs font-medium hover:text-[#378ADD] transition-colors"
-              >Ver todos</a
-            >
-          </div>
-          <div class="p-5 space-y-4">
-            <ng-container *ngIf="!loadingMetrics && metrics?.occupationByProfessional?.length">
-              <div *ngFor="let prof of metrics!.occupationByProfessional" class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2 min-w-0">
-                    <div
-                      class="w-6 h-6 rounded-full bg-[#EBF4FD] flex items-center justify-center text-[#185FA5] text-xs font-semibold shrink-0"
-                    >
-                      {{ prof.professionalName | slice: 0 : 1 | uppercase }}
-                    </div>
-                    <span class="text-[#2C2C2A] text-sm font-medium truncate">{{
-                      prof.professionalName
-                    }}</span>
-                  </div>
-                  <div class="flex items-center gap-3 shrink-0 ml-3">
-                    <span class="text-[#888780] text-xs">{{ prof.totalAppointments }} agend.</span>
-                    <span class="text-[#042C53] text-xs font-semibold w-10 text-right">
-                      {{ prof.occupationRate * 100 | number: '1.0-0' : 'pt-BR' }}%
-                    </span>
-                  </div>
-                </div>
-                <div class="h-1.5 bg-[#E8E6DF] rounded-full overflow-hidden">
-                  <div
-                    class="h-full rounded-full transition-all duration-500"
-                    [style.width.%]="occupationBarWidth(prof.occupationRate)"
-                    [ngClass]="
-                      prof.occupationRate >= 0.8
-                        ? 'bg-green-500'
-                        : prof.occupationRate >= 0.5
-                          ? 'bg-[#378ADD]'
-                          : 'bg-amber-400'
-                    "
-                  ></div>
-                </div>
-              </div>
-            </ng-container>
-            <div *ngIf="loadingMetrics" class="space-y-4">
-              <div *ngFor="let _ of [1, 2, 3]" class="space-y-1.5">
-                <div class="h-4 bg-[#E8E6DF] rounded animate-pulse w-3/4"></div>
-                <div class="h-1.5 bg-[#E8E6DF] rounded-full animate-pulse"></div>
-              </div>
-            </div>
-            <div
-              *ngIf="!loadingMetrics && !metrics?.occupationByProfessional?.length"
-              class="py-6 text-center"
-            >
-              <p class="text-[#888780] text-sm">Sem dados para o período.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-[#E8E6DF] overflow-hidden">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-[#E8E6DF]">
-            <h2 class="text-[#042C53] text-sm font-semibold">Serviços mais procurados</h2>
-            <a
-              routerLink="/dashboard/servicos"
-              class="text-[#185FA5] text-xs font-medium hover:text-[#378ADD] transition-colors"
-              >Ver todos</a
-            >
-          </div>
-          <div class="divide-y divide-[#E8E6DF]">
-            <ng-container *ngIf="!loadingMetrics && metrics?.topServices?.length">
-              <div
-                *ngFor="let svc of metrics!.topServices; let i = index"
-                class="flex items-center gap-4 px-6 py-3.5"
-              >
-                <span class="text-[#888780] text-xs font-medium w-4 shrink-0">{{ i + 1 }}</span>
-                <div class="flex-1 min-w-0">
-                  <p class="text-[#2C2C2A] text-sm font-medium truncate">{{ svc.serviceName }}</p>
-                  <p class="text-[#888780] text-xs mt-0.5">
-                    {{ svc.appointmentCount }} agendamento{{
-                      svc.appointmentCount !== 1 ? 's' : ''
-                    }}
-                  </p>
-                </div>
-                <span class="text-[#185FA5] text-sm font-semibold shrink-0">
-                  {{ svc.estimatedRevenue | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
-                </span>
-              </div>
-            </ng-container>
-            <div *ngIf="loadingMetrics" class="divide-y divide-[#E8E6DF]">
-              <div *ngFor="let _ of [1, 2, 3, 4]" class="flex items-center gap-4 px-6 py-3.5">
-                <div class="h-4 bg-[#E8E6DF] rounded animate-pulse flex-1"></div>
-                <div class="h-4 bg-[#E8E6DF] rounded animate-pulse w-16"></div>
-              </div>
-            </div>
-            <div
-              *ngIf="!loadingMetrics && !metrics?.topServices?.length"
-              class="px-6 py-10 text-center"
-            >
-              <p class="text-[#888780] text-sm">Sem dados para o período.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-2xl border border-[#E8E6DF]">
-        <div class="flex items-center justify-between px-6 py-4 border-b border-[#E8E6DF]">
-          <h2 class="text-[#042C53] text-sm font-semibold">Serviços cadastrados</h2>
-          <button
-            (click)="openCreateModal()"
-            class="text-[#185FA5] text-xs font-medium hover:text-[#378ADD] transition-colors flex items-center gap-1 cursor-pointer"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 5v14M5 12h14"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-            </svg>
-            Novo
-          </button>
-        </div>
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[#E8E6DF]"
-        >
-          <div
-            *ngFor="let service of services$ | async"
-            class="flex items-center justify-between px-6 py-3.5"
-          >
-            <div>
-              <p class="text-[#2C2C2A] text-sm font-medium">{{ service.name }}</p>
-              <p class="text-[#888780] text-xs">{{ service.durationMinutes }} min</p>
-            </div>
-            <div class="flex items-center gap-3">
-              <span class="text-[#185FA5] text-sm font-semibold">{{
-                service.price | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR'
-              }}</span>
-              <button
-                (click)="openEditModal(service)"
-                class="text-[#888780] hover:text-[#185FA5] transition-colors"
-              >
+      <ng-container *ngIf="{ m: (metrics$ | async), c: (userCounts$ | async) } as vm">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-2xl border border-[#E8E6DF] p-5">
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-[#888780] text-xs font-medium">Agendamentos no período</p>
+              <div class="w-7 h-7 rounded-lg bg-[#EBF4FD] flex items-center justify-center">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <rect
+                    x="3"
+                    y="4"
+                    width="18"
+                    height="18"
+                    rx="2"
+                    stroke="#185FA5"
+                    stroke-width="1.5"
+                  />
                   <path
-                    d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"
-                    stroke="currentColor"
+                    d="M8 2v4M16 2v4M3 10h18"
+                    stroke="#185FA5"
                     stroke-width="1.5"
                     stroke-linecap="round"
                   />
                 </svg>
+              </div>
+            </div>
+            <p class="text-[#042C53] text-3xl font-bold">
+              <ng-container *ngIf="vm.m !== null">{{ vm.m.totalAppointments }}</ng-container>
+              <span
+                *ngIf="vm.m === null"
+                class="inline-block w-10 h-8 bg-[#E8E6DF] rounded animate-pulse"
+              ></span>
+            </p>
+            <p class="text-[#888780] text-xs mt-1">
+              <ng-container *ngIf="vm.c !== null">
+                {{ vm.c.clients }} clientes · {{ vm.c.professionals }} profissionais
+              </ng-container>
+              <span
+                *ngIf="vm.c === null"
+                class="inline-block w-36 h-3 bg-[#E8E6DF] rounded animate-pulse"
+              ></span>
+            </p>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-[#E8E6DF] p-5">
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-[#888780] text-xs font-medium">Faturamento estimado</p>
+              <div class="w-7 h-7 rounded-lg bg-[#EBF4FD] flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+                    stroke="#185FA5"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+            </div>
+            <p class="text-[#042C53] text-3xl font-bold">
+              <ng-container *ngIf="vm.m !== null">
+                {{ vm.m.estimatedRevenue | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+              </ng-container>
+              <span
+                *ngIf="vm.m === null"
+                class="inline-block w-24 h-8 bg-[#E8E6DF] rounded animate-pulse"
+              ></span>
+            </p>
+            <p class="text-[#888780] text-xs mt-1">Agendados + concluídos</p>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-[#E8E6DF] p-5">
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-[#888780] text-xs font-medium">Taxa de no-show</p>
+              <div class="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+                    stroke="#dc2626"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+            </div>
+            <p class="text-[#042C53] text-3xl font-bold">
+              <ng-container *ngIf="vm.m !== null">
+                {{ vm.m.noShowRate * 100 | number: '1.1-1' : 'pt-BR' }}%
+              </ng-container>
+              <span
+                *ngIf="vm.m === null"
+                class="inline-block w-14 h-8 bg-[#E8E6DF] rounded animate-pulse"
+              ></span>
+            </p>
+            <p class="text-[#888780] text-xs mt-1">Clientes que não compareceram</p>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-[#E8E6DF] p-5">
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-[#888780] text-xs font-medium">Ocupação média</p>
+              <div class="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M22 12h-4l-3 9L9 3l-3 9H2"
+                    stroke="#16a34a"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+            <p class="text-[#042C53] text-3xl font-bold">
+              <ng-container *ngIf="vm.m !== null">
+                {{ avgOccupation(vm.m) * 100 | number: '1.1-1' : 'pt-BR' }}%
+              </ng-container>
+              <span
+                *ngIf="vm.m === null"
+                class="inline-block w-14 h-8 bg-[#E8E6DF] rounded animate-pulse"
+              ></span>
+            </p>
+            <p class="text-[#888780] text-xs mt-1">Média entre profissionais</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white rounded-2xl border border-[#E8E6DF] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-[#E8E6DF]">
+              <h2 class="text-[#042C53] text-sm font-semibold">Agenda de hoje</h2>
+              <a
+                routerLink="/dashboard/agendamentos"
+                class="text-[#185FA5] text-xs font-medium hover:text-[#378ADD] transition-colors"
+                >Ver histórico</a
+              >
+            </div>
+            <div class="divide-y divide-[#E8E6DF]">
+              <div
+                *ngFor="let a of todayAppointments$ | async"
+                class="flex items-center gap-4 px-6 py-3.5"
+              >
+                <div class="text-right w-12 shrink-0">
+                  <p class="text-[#042C53] text-xs font-bold">{{ a.formattedHour }}</p>
+                </div>
+                <div class="w-px h-8 bg-[#E8E6DF]"></div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[#2C2C2A] text-sm font-semibold truncate">{{ a.client.name }}</p>
+                  <p class="text-[#888780] text-xs">
+                    {{ a.service.name }} · {{ a.professional.user.name }}
+                  </p>
+                </div>
+                <span
+                  class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium shrink-0"
+                  [ngClass]="statusClass(a.status)"
+                >
+                  {{ statusLabel(a.status) }}
+                </span>
+              </div>
+              <div
+                *ngIf="(todayAppointments$ | async)?.length === 0"
+                class="px-6 py-10 text-center"
+              >
+                <p class="text-[#888780] text-sm">Nenhum agendamento hoje.</p>
+              </div>
+            </div>
+          </div>
+
+          <form
+            class="bg-white rounded-2xl border border-[#E8E6DF] p-5 self-start"
+            [formGroup]="createServiceForm"
+            (ngSubmit)="createService()"
+          >
+            <h2 class="text-[#042C53] text-sm font-semibold mb-4">Cadastrar serviço</h2>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-medium text-[#2C2C2A] mb-1">Nome do serviço</label>
+                <input
+                  type="text"
+                  formControlName="name"
+                  placeholder="Ex: Corte feminino"
+                  class="w-full px-3 py-2.5 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
+                />
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs font-medium text-[#2C2C2A] mb-1">Preço (R$)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    formControlName="price"
+                    placeholder="0,00"
+                    class="w-full px-3 py-2.5 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-[#2C2C2A] mb-1">Duração (min)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    formControlName="durationMinutes"
+                    placeholder="60"
+                    class="w-full px-3 py-2.5 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-sm placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all duration-200"
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                class="w-full bg-[#185FA5] hover:bg-[#0C447C] text-white font-semibold py-2.5 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 5v14M5 12h14"
+                    stroke="white"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                Salvar serviço
               </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-white rounded-2xl border border-[#E8E6DF] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-[#E8E6DF]">
+              <h2 class="text-[#042C53] text-sm font-semibold">Ocupação por profissional</h2>
+              <a
+                routerLink="/dashboard/profissionais"
+                class="text-[#185FA5] text-xs font-medium hover:text-[#378ADD] transition-colors"
+                >Ver todos</a
+              >
+            </div>
+            <div class="p-5 space-y-4">
+              <ng-container *ngIf="vm.m?.occupationByProfessional?.length">
+                <div *ngFor="let prof of vm.m!.occupationByProfessional" class="space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <div
+                        class="w-6 h-6 rounded-full bg-[#EBF4FD] flex items-center justify-center text-[#185FA5] text-xs font-semibold shrink-0"
+                      >
+                        {{ prof.professionalName | slice: 0 : 1 | uppercase }}
+                      </div>
+                      <span class="text-[#2C2C2A] text-sm font-medium truncate">{{
+                        prof.professionalName
+                      }}</span>
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0 ml-3">
+                      <span class="text-[#888780] text-xs"
+                        >{{ prof.totalAppointments }} agend.</span
+                      >
+                      <span class="text-[#042C53] text-xs font-semibold w-10 text-right">
+                        {{ prof.occupationRate * 100 | number: '1.0-0' : 'pt-BR' }}%
+                      </span>
+                    </div>
+                  </div>
+                  <div class="h-1.5 bg-[#E8E6DF] rounded-full overflow-hidden">
+                    <div
+                      class="h-full rounded-full transition-all duration-500"
+                      [style.width.%]="occupationBarWidth(prof.occupationRate)"
+                      [ngClass]="
+                        prof.occupationRate >= 0.8
+                          ? 'bg-green-500'
+                          : prof.occupationRate >= 0.5
+                            ? 'bg-[#378ADD]'
+                            : 'bg-amber-400'
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </ng-container>
+              <div *ngIf="vm.m === null" class="space-y-4">
+                <div *ngFor="let _ of [1, 2, 3]" class="space-y-1.5">
+                  <div class="h-4 bg-[#E8E6DF] rounded animate-pulse w-3/4"></div>
+                  <div class="h-1.5 bg-[#E8E6DF] rounded-full animate-pulse"></div>
+                </div>
+              </div>
+              <div *ngIf="vm.m && !vm.m.occupationByProfessional.length" class="py-6 text-center">
+                <p class="text-[#888780] text-sm">Sem dados para o período.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-[#E8E6DF] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-[#E8E6DF]">
+              <h2 class="text-[#042C53] text-sm font-semibold">Serviços mais procurados</h2>
+              <a
+                routerLink="/dashboard/servicos"
+                class="text-[#185FA5] text-xs font-medium hover:text-[#378ADD] transition-colors"
+                >Ver todos</a
+              >
+            </div>
+            <div class="divide-y divide-[#E8E6DF]">
+              <ng-container *ngIf="vm.m?.topServices?.length">
+                <div
+                  *ngFor="let svc of vm.m!.topServices; let i = index"
+                  class="flex items-center gap-4 px-6 py-3.5"
+                >
+                  <span class="text-[#888780] text-xs font-medium w-4 shrink-0">{{ i + 1 }}</span>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[#2C2C2A] text-sm font-medium truncate">{{ svc.serviceName }}</p>
+                    <p class="text-[#888780] text-xs mt-0.5">
+                      {{ svc.appointmentCount }} agendamento{{
+                        svc.appointmentCount !== 1 ? 's' : ''
+                      }}
+                    </p>
+                  </div>
+                  <span class="text-[#185FA5] text-sm font-semibold shrink-0">
+                    {{ svc.estimatedRevenue | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+                  </span>
+                </div>
+              </ng-container>
+              <div *ngIf="vm.m === null" class="divide-y divide-[#E8E6DF]">
+                <div *ngFor="let _ of [1, 2, 3, 4]" class="flex items-center gap-4 px-6 py-3.5">
+                  <div class="h-4 bg-[#E8E6DF] rounded animate-pulse flex-1"></div>
+                  <div class="h-4 bg-[#E8E6DF] rounded animate-pulse w-16"></div>
+                </div>
+              </div>
+              <div *ngIf="vm.m && !vm.m.topServices.length" class="px-6 py-10 text-center">
+                <p class="text-[#888780] text-sm">Sem dados para o período.</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+
+        <div class="bg-white rounded-2xl border border-[#E8E6DF]">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-[#E8E6DF]">
+            <h2 class="text-[#042C53] text-sm font-semibold">Serviços cadastrados</h2>
+            <button
+              (click)="openCreateModal()"
+              class="text-[#185FA5] text-xs font-medium hover:text-[#378ADD] transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 5v14M5 12h14"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Novo
+            </button>
+          </div>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[#E8E6DF]"
+          >
+            <div
+              *ngFor="let service of services$ | async"
+              class="flex items-center justify-between px-6 py-3.5"
+            >
+              <div>
+                <p class="text-[#2C2C2A] text-sm font-medium">{{ service.name }}</p>
+                <p class="text-[#888780] text-xs">{{ service.durationMinutes }} min</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-[#185FA5] text-sm font-semibold">{{
+                  service.price | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR'
+                }}</span>
+                <button
+                  (click)="openEditModal(service)"
+                  class="text-[#888780] hover:text-[#185FA5] transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
     </main>
   </div>
 </div>

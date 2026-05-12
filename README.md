@@ -98,8 +98,6 @@ Create users via `/register` or through the backend seed. One per profile:
 - **Unit tests** — no unit tests were written;
 - **Mobile responsiveness** — the sidebar is hidden on smaller screens (`hidden lg:flex`) but there is no alternative navigation for mobile.
 - **Pagination in lists** — clients, professionals, and appointments all load every record at once.
-- **Real-time notifications** — appointment status is updated via manual polling; WebSockets or SSE would provide a better UX.
-- Dashboard with the correct filters.
 
 **Given more time:**
 I would extract the inline sidebar from `dashboard.component.html` into the same reusable component already used by the other modules, eliminating the code duplication that caused the Import link bug; add integration tests for the critical routes (login, scheduling, import); and implement server-side pagination for the listings.

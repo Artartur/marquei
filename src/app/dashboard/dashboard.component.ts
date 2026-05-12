@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ServicesService } from '../services/services.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Service } from '../interfaces/service.interface';
@@ -10,36 +10,33 @@ import { UserService } from '../services/user.service';
 import { UserRole } from '../utils/enums/UserRole';
 import { ClientAppointment } from '../interfaces/client-appointment.interface';
 import { AppointmentService } from '../services/appointment.service';
+import { DashboardMetricsService } from '../services/dashboard-metrics.service';
+import { DashboardMetrics } from '../interfaces/dashboard-metrics.interface';
 
-type TodayAppointment = ClientAppointment & {
-  formattedHour: string;
-};
+type TodayAppointment = ClientAppointment & { formattedHour: string };
 
 @Component({
   selector: 'app-dashboard',
   standalone: false,
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   public createServiceForm!: FormGroup;
   public services$!: Observable<Service[]>;
   public todayAppointments$!: Observable<TodayAppointment[]>;
-  public appointmentsByProfessional$!: Observable<
-    {
-      professionalName: string;
-      total: number;
-    }[]
-  >;
-  public todayRevenue$!: Observable<number>;
 
   public currentUser: User | null = null;
-  public professionals: User[] = [];
   public selectedService: Service | null = null;
-
   public isServiceModalOpen = false;
 
   public clientsCount = 0;
   public professionalsCount = 0;
+
+  public metrics: DashboardMetrics | null = null;
+  public loadingMetrics = false;
+
+  public fromDate: string;
+  public toDate: string;
 
   constructor(
     private fb: FormBuilder,
@@ -48,7 +45,11 @@ export class DashboardComponent {
     private storeService: StoreService,
     private servicesService: ServicesService,
     private usersService: UserService,
+    private metricsService: DashboardMetricsService,
   ) {
+    const today = new Date();
+    this.toDate = today.toLocaleDateString('sv', { timeZone: 'America/Sao_Paulo' });
+    this.fromDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`;
     this.currentUser = this.storeService.currentUser();
   }
 
@@ -61,25 +62,9 @@ export class DashboardComponent {
     });
 
     this.getServices();
-    this.getAppointmentsByProfessional();
     this.getTodayAppointments();
-    this.getTodayRevenue();
     this.getUserCounts();
-  }
-
-  public createService() {
-    if (this.createServiceForm.invalid) return;
-    this.servicesService.create(this.createServiceForm.value).subscribe({
-      next: () => {
-        this.createServiceForm.reset();
-        this.getServices();
-      },
-      error: () => console.log('erro ao criar um serviço'),
-    });
-  }
-
-  public getServices() {
-    this.services$ = this.servicesService.findAll();
+    this.loadMetrics();
   }
 
   private isToday(iso: string): boolean {
@@ -88,37 +73,29 @@ export class DashboardComponent {
     return new Date(iso).toLocaleDateString('sv', { timeZone: tz }) === today;
   }
 
-  public getAppointmentsByProfessional() {
-    this.appointmentsByProfessional$ = this.appointmentService.getAppointments().pipe(
-      map((appointments) => {
-        const todayAppointments = appointments.filter((a) => this.isToday(a.scheduledAt));
+  public avgOccupation(): number {
+    const profs = this.metrics?.occupationByProfessional ?? [];
+    if (!profs.length) return 0;
+    return profs.reduce((sum, p) => sum + p.occupationRate, 0) / profs.length;
+  }
 
-        const grouped = todayAppointments.reduce(
-          (acc, appointment) => {
-            const professionalName = appointment.professional.user.name;
+  public closeServiceModal(): void {
+    this.isServiceModalOpen = false;
+    this.selectedService = null;
+  }
 
-            const existing = acc.find((p) => p.professionalName === professionalName);
+  public createService() {
+    if (this.createServiceForm.invalid) return;
+    this.servicesService.create(this.createServiceForm.value).subscribe({
+      next: () => {
+        this.createServiceForm.reset({ active: true, durationMinutes: 0, price: 0 });
+        this.getServices();
+      },
+    });
+  }
 
-            if (existing) {
-              existing.total += 1;
-            } else {
-              acc.push({
-                professionalName,
-                total: 1,
-              });
-            }
-
-            return acc;
-          },
-          [] as {
-            professionalName: string;
-            total: number;
-          }[],
-        );
-
-        return grouped.sort((a, b) => b.total - a.total);
-      }),
-    );
+  public getServices() {
+    this.services$ = this.servicesService.findAll();
   }
 
   public getTodayAppointments() {
@@ -127,39 +104,52 @@ export class DashboardComponent {
         const tz = 'America/Sao_Paulo';
         return appointments
           .filter((a) => this.isToday(a.scheduledAt))
-          .map((appointment) => {
-            const date = new Date(appointment.scheduledAt);
-            return {
-              ...appointment,
-              date,
-              formattedHour: date.toLocaleTimeString('pt-BR', { timeZone: tz, hour: '2-digit', minute: '2-digit' }),
-            };
-          })
+          .map((a) => ({
+            ...a,
+            date: new Date(a.scheduledAt),
+            formattedHour: new Date(a.scheduledAt).toLocaleTimeString('pt-BR', {
+              timeZone: tz,
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          }))
           .sort((a, b) => a.date.getTime() - b.date.getTime());
-      }),
-    );
-  }
-
-  public getTodayRevenue() {
-    this.todayRevenue$ = this.appointmentService.getAppointments().pipe(
-      map((appointments) => {
-        return appointments
-          .filter((appointment) => this.isToday(appointment.scheduledAt) && appointment.status !== 'CANCELLED')
-          .reduce((total, appointment) => {
-            return total + Number(appointment.service.price);
-          }, 0);
       }),
     );
   }
 
   public getUserCounts() {
     this.usersService.findAll().subscribe((users) => {
-      const professionalsList = users.filter((u) => u.role === UserRole.PROFESSIONAL);
-
-      this.professionals = professionalsList;
-      this.professionalsCount = professionalsList.length;
+      this.professionalsCount = users.filter((u) => u.role === UserRole.PROFESSIONAL).length;
       this.clientsCount = users.filter((u) => u.role === UserRole.CLIENT).length;
     });
+  }
+
+  public loadMetrics(): void {
+    this.loadingMetrics = true;
+    this.metricsService.getMetrics(this.fromDate, this.toDate).subscribe({
+      next: (data) => {
+        this.metrics = data;
+        this.loadingMetrics = false;
+      },
+      error: () => (this.loadingMetrics = false),
+    });
+  }
+
+  public logout(): void {
+    this.authService.logout().subscribe();
+  }
+
+  public occupationBarWidth(rate: number): number {
+    return Math.round(rate * 100);
+  }
+
+  public onPeriodChange(): void {
+    if (this.fromDate && this.toDate) this.loadMetrics();
+  }
+
+  public onServiceSaved(): void {
+    this.getServices();
   }
 
   public openCreateModal(): void {
@@ -172,19 +162,6 @@ export class DashboardComponent {
     this.isServiceModalOpen = true;
   }
 
-  public closeServiceModal(): void {
-    this.isServiceModalOpen = false;
-    this.selectedService = null;
-  }
-
-  public onServiceSaved(): void {
-    this.getServices();
-  }
-
-  public logout(): void {
-    this.authService.logout().subscribe();
-  }
-
   public statusClass(status: string): string {
     const map: Record<string, string> = {
       CANCELLED: 'bg-red-50 text-red-700',
@@ -192,7 +169,6 @@ export class DashboardComponent {
       SCHEDULED: 'bg-[#D4F0FF] text-[#1496DE]',
       NO_SHOW: 'bg-[#FAA53E] text-[#ED7300]',
     };
-
     return map[status] ?? '';
   }
 
@@ -203,7 +179,6 @@ export class DashboardComponent {
       NO_SHOW: 'Não compareceu',
       SCHEDULED: 'Agendado',
     };
-
     return map[status] ?? status;
   }
 }

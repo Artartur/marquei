@@ -38,7 +38,6 @@
           </button>
         </div>
 
-        <!-- Drop zone -->
         <div
           *ngIf="!selectedFile"
           (dragover)="onDragOver($event)"
@@ -261,7 +260,6 @@
                   >
                 </div>
 
-                <!-- Progress bar (visible while processing) -->
                 <div *ngIf="job.status === 'PROCESSING' || job.status === 'QUEUED'" class="mt-2.5">
                   <div class="flex items-center justify-between mb-1">
                     <span class="text-[#888780] text-xs"

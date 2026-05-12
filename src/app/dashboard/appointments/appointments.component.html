@@ -2,24 +2,77 @@
   <app-dashboard-sidebar></app-dashboard-sidebar>
 
   <div class="flex-1 flex flex-col min-w-0">
-    <header class="bg-white border-b border-[#E8E6DF] px-6 py-4 flex items-center justify-between">
-      <div>
-        <p class="text-[#85B7EB] text-xs uppercase tracking-[0.18em] font-medium">Gerência</p>
-        <h1 class="text-[#042C53] text-xl font-semibold">Agendamentos</h1>
-      </div>
-      <div class="flex items-center gap-2 flex-wrap justify-end">
+    <header class="bg-white border-b border-[#E8E6DF] px-6 py-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-[#85B7EB] text-xs uppercase tracking-[0.18em] font-medium">Gerência</p>
+          <h1 class="text-[#042C53] text-xl font-semibold">Agendamentos</h1>
+        </div>
         <button
-          *ngFor="let opt of statusOptions"
-          (click)="setFilter(opt.value)"
-          [ngClass]="
-            statusFilter === opt.value
-              ? 'bg-[#185FA5] text-white'
-              : 'bg-[#F7F5EF] text-[#888780] hover:bg-[#E8E6DF]'
-          "
-          class="px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 border border-transparent"
+          *ngIf="hasActiveFilters()"
+          (click)="clearFilters()"
+          class="text-xs text-[#888780] hover:text-red-500 border border-[#D3D1C7] rounded-lg px-3 py-1.5 transition-colors"
         >
-          {{ opt.label }}
+          Limpar filtros
         </button>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="relative">
+          <svg
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-[#888780]"
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5" />
+            <path
+              d="m21 21-4.35-4.35"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+          <input
+            type="text"
+            placeholder="Cliente, profissional ou serviço"
+            [(ngModel)]="searchText"
+            (input)="onSearch($event)"
+            class="pl-8 pr-4 py-2 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-xs placeholder-[#888780] focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD] transition-all w-64"
+          />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input
+            type="date"
+            [(ngModel)]="fromDate"
+            (change)="onFromChange($event)"
+            class="px-3 py-2 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-xs focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD]"
+          />
+          <span class="text-[#888780] text-xs">até</span>
+          <input
+            type="date"
+            [(ngModel)]="toDate"
+            (change)="onToChange($event)"
+            class="px-3 py-2 bg-[#F7F5EF] border border-[#D3D1C7] rounded-xl text-[#2C2C2A] text-xs focus:outline-none focus:ring-2 focus:ring-[#378ADD]/40 focus:border-[#378ADD]"
+          />
+        </div>
+
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button
+            *ngFor="let opt of statusOptions"
+            (click)="setFilter(opt.value)"
+            [ngClass]="
+              statusFilter === opt.value
+                ? 'bg-[#185FA5] text-white'
+                : 'bg-[#F7F5EF] text-[#888780] hover:bg-[#E8E6DF]'
+            "
+            class="px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
       </div>
     </header>
 
@@ -32,7 +85,9 @@
           <div class="flex items-center justify-between px-6 py-4 border-b border-[#E8E6DF]">
             <div>
               <h2 class="text-[#042C53] text-sm font-semibold">{{ group.date }}</h2>
-              <p class="text-[#888780] text-xs mt-0.5">{{ group.appointments.length }} agendamento(s)</p>
+              <p class="text-[#888780] text-xs mt-0.5">
+                {{ group.appointments.length }} agendamento(s)
+              </p>
             </div>
           </div>
 
@@ -48,7 +103,9 @@
               <div class="w-px h-8 bg-[#E8E6DF]"></div>
               <div class="flex-1 min-w-0">
                 <p class="text-[#2C2C2A] text-sm font-semibold truncate">{{ a.client.name }}</p>
-                <p class="text-[#888780] text-xs">{{ a.service.name }} · {{ a.professional.user.name }}</p>
+                <p class="text-[#888780] text-xs">
+                  {{ a.service.name }} · {{ a.professional.user.name }}
+                </p>
               </div>
               <span
                 class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium shrink-0"
@@ -60,14 +117,16 @@
           </div>
         </div>
 
-        <div
-          *ngIf="groups.length === 0"
-          class="flex flex-col items-center justify-center py-16"
-        >
+        <div *ngIf="groups.length === 0" class="flex flex-col items-center justify-center py-16">
           <div class="w-12 h-12 rounded-2xl bg-[#EBF4FD] flex items-center justify-center mb-4">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               <rect x="3" y="4" width="18" height="18" rx="2" stroke="#185FA5" stroke-width="1.5" />
-              <path d="M8 2v4M16 2v4M3 10h18" stroke="#185FA5" stroke-width="1.5" stroke-linecap="round" />
+              <path
+                d="M8 2v4M16 2v4M3 10h18"
+                stroke="#185FA5"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
             </svg>
           </div>
           <p class="text-[#2C2C2A] text-sm font-medium">Nenhum agendamento</p>
@@ -94,7 +153,12 @@
         class="text-[#888780] hover:text-[#042C53] transition-colors"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path
+            d="M18 6 6 18M6 6l12 12"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
         </svg>
       </button>
     </div>
@@ -107,7 +171,9 @@
       <p class="text-[#888780] text-xs">{{ formatTime(selectedAppointment.scheduledAt) }}</p>
     </div>
 
-    <ng-container *ngIf="selectedAppointment.status === AppointmentStatus.SCHEDULED; else alreadyClosed">
+    <ng-container
+      *ngIf="selectedAppointment.status === AppointmentStatus.SCHEDULED; else alreadyClosed"
+    >
       <p class="text-[#5F5E5A] text-sm mb-3">Como foi o atendimento?</p>
       <div class="space-y-2">
         <button
@@ -116,7 +182,13 @@
           class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-[#D1FAE5] hover:bg-[#A7F3D0] text-[#065F46] text-sm font-medium transition-colors disabled:opacity-50"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path
+              d="M20 6 9 17l-5-5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
           Realizado
         </button>
@@ -126,7 +198,13 @@
           class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-[#FEF3C7] hover:bg-[#FDE68A] text-[#92400E] text-sm font-medium transition-colors disabled:opacity-50"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path
+              d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
           Não compareceu
         </button>
@@ -137,7 +215,12 @@
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
-            <path d="M15 9 9 15M9 9l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <path
+              d="M15 9 9 15M9 9l6 6"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
           </svg>
           Cancelado
         </button>
@@ -147,7 +230,10 @@
     <ng-template #alreadyClosed>
       <p class="text-[#5F5E5A] text-sm text-center py-2">
         Atendimento encerrado como
-        <span class="font-semibold text-[#042C53]">{{ statusLabel(selectedAppointment.status) }}</span>.
+        <span class="font-semibold text-[#042C53]">{{
+          statusLabel(selectedAppointment.status)
+        }}</span
+        >.
       </p>
       <button
         (click)="closeAppointment()"
